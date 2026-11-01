@@ -6,25 +6,14 @@ import { ReactFlow, ReactFlowProvider } from "@xyflow/react";
 import { initialNodes, initialEdges, nodeTypes } from "@/components/WorkflowPipeline";
 import { Background } from "@xyflow/react";
 import {
-  LayoutDashboard,
   Users,
   CheckSquare,
-  Workflow,
-  BookOpen,
-  Plug,
-  BarChart3,
-  FileText,
-  Settings,
-  Cpu,
-  MemoryStick,
-  Network,
   Zap,
   Bell,
   Plus,
   ChevronDown,
   TrendingUp,
   TrendingDown,
-  Rocket,
   Search,
   Code2,
   Database,
@@ -33,22 +22,13 @@ import {
   Bot,
   AlertTriangle,
   CheckCircle2,
+  CheckCircle,
+  BarChart,
+  Upload,
   Clock,
   ArrowRight,
   Send,
 } from "lucide-react";
-
-const navItems = [
-  { label: "Overview", icon: LayoutDashboard, active: true },
-  { label: "Agents", icon: Users, active: false },
-  { label: "Tasks", icon: CheckSquare, active: false },
-  { label: "Workflows", icon: Workflow, active: false },
-  { label: "Knowledge Base", icon: BookOpen, active: false },
-  { label: "Integrations", icon: Plug, active: false },
-  { label: "Analytics", icon: BarChart3, active: false },
-  { label: "Logs", icon: FileText, active: false },
-  { label: "Settings", icon: Settings, active: false },
-];
 
 const metrics = [
   {
@@ -107,37 +87,19 @@ const agents = [
     total: 15,
     color: "#8B5CF6",
     icon: Search,
+    agentIcon: { icon: Search, bgColor: "bg-purple-500/10", borderColor: "border-purple-500/30" },
     data: [3, 5, 4, 7, 6, 8, 7, 9, 8, 10],
   },
   {
-    name: "Code Agent",
-    sub: "Code Generation",
+    name: "Analysis Agent",
+    sub: "Data Analysis",
     status: "Active",
     done: 8,
     total: 10,
     color: "#3B82F6",
-    icon: Code2,
+    icon: BarChart,
+    agentIcon: { icon: BarChart, bgColor: "bg-blue-500/10", borderColor: "border-blue-500/30" },
     data: [2, 4, 3, 6, 5, 7, 6, 8, 7, 9],
-  },
-  {
-    name: "Data Agent",
-    sub: "Data Processing",
-    status: "Idle",
-    done: 20,
-    total: 20,
-    color: "#10B981",
-    icon: Database,
-    data: [5, 6, 5, 7, 6, 8, 7, 7, 8, 8],
-  },
-  {
-    name: "Security Agent",
-    sub: "Threat Analysis",
-    status: "Active",
-    done: 4,
-    total: 6,
-    color: "#F59E0B",
-    icon: Shield,
-    data: [1, 2, 2, 3, 4, 3, 5, 4, 6, 5],
   },
   {
     name: "Writer Agent",
@@ -145,18 +107,42 @@ const agents = [
     status: "Idle",
     done: 15,
     total: 15,
-    color: "#EC4899",
+    color: "#EAB308",
     icon: PenTool,
+    agentIcon: { icon: PenTool, bgColor: "bg-yellow-500/10", borderColor: "border-yellow-500/30" },
     data: [4, 5, 6, 5, 7, 6, 8, 7, 8, 9],
   },
   {
-    name: "Orchestrator",
-    sub: "Task Coordination",
+    name: "Review Agent",
+    sub: "Quality Review",
     status: "Active",
-    done: 30,
-    total: 34,
-    color: "#06B6D4",
-    icon: Bot,
+    done: 6,
+    total: 8,
+    color: "#EC4899",
+    icon: CheckCircle,
+    agentIcon: { icon: CheckCircle, bgColor: "bg-pink-500/10", borderColor: "border-pink-500/30" },
+    data: [1, 2, 2, 3, 4, 3, 5, 4, 6, 5],
+  },
+  {
+    name: "SEO Agent",
+    sub: "SEO Optimization",
+    status: "Active",
+    done: 10,
+    total: 12,
+    color: "#10B981",
+    icon: TrendingUp,
+    agentIcon: { icon: TrendingUp, bgColor: "bg-green-500/10", borderColor: "border-green-500/30" },
+    data: [5, 6, 5, 7, 6, 8, 7, 7, 8, 8],
+  },
+  {
+    name: "Publisher Agent",
+    sub: "Publishing",
+    status: "Idle",
+    done: 20,
+    total: 20,
+    color: "#EF4444",
+    icon: Upload,
+    agentIcon: { icon: Upload, bgColor: "bg-red-500/10", borderColor: "border-red-500/30" },
     data: [6, 7, 8, 7, 9, 8, 10, 9, 11, 10],
   },
 ];
@@ -183,134 +169,57 @@ const priorityStyles: Record<string, string> = {
   Low: "bg-blue-500/15 text-blue-400 border-blue-500/30",
 };
 
+import PageLayout from "@/components/PageLayout";
+import AgentIcon from "@/components/AgentIcon";
+
+// ... (keep other imports)
+
 export default function Home() {
   const [tab, setTab] = useState("In Progress");
+  const [envOpen, setEnvOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#0B0F19] text-gray-300 font-sans overflow-hidden">
-      {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-gray-800 bg-[#0B0F19]">
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-600/20 text-purple-400">
-            <Rocket className="h-5 w-5" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-tight text-white">NEXUS</span>
-            <span className="text-xs text-gray-500">AI Orchestration</span>
-          </div>
+    <PageLayout>
+      {/* Header */}
+      <header className="flex items-center justify-between p-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white">AI Agent Orchestration</h1>
+          <p className="text-sm text-gray-400">
+            Monitor and manage your AI agents in real-time
+          </p>
         </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2">
-          <ul className="flex flex-col gap-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <li key={item.label}>
-                  <a
-                    href="#"
-                    className={
-                      item.active
-                        ? "flex items-center gap-3 rounded-lg bg-purple-600/15 px-3 py-2 text-sm font-medium text-purple-300"
-                        : "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 transition-all hover:bg-gray-800/50 hover:text-white"
-                    }
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* System Status */}
-        <div className="border-t border-gray-800 p-4">
-          <div className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
-              System Status
-            </div>
-            <div className="flex flex-col gap-3">
-              <div>
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 text-gray-400">
-                    <Cpu className="h-3.5 w-3.5" /> CPU
-                  </span>
-                  <span className="text-gray-300">42%</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
-                  <div className="h-full w-[42%] rounded-full bg-green-500" />
-                </div>
-              </div>
-              <div>
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 text-gray-400">
-                    <MemoryStick className="h-3.5 w-3.5" /> Memory
-                  </span>
-                  <span className="text-gray-300">68%</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
-                  <div className="h-full w-[68%] rounded-full bg-green-500" />
-                </div>
-              </div>
-              <div>
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 text-gray-400">
-                    <Network className="h-3.5 w-3.5" /> Connections
-                  </span>
-                  <span className="text-gray-300">24</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
-                  <div className="h-full w-[60%] rounded-full bg-blue-500" />
-                </div>
-              </div>
-              <div>
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 text-gray-400">
-                    <Zap className="h-3.5 w-3.5" /> API Rate
-                  </span>
-                  <span className="text-gray-300">85%</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
-                  <div className="h-full w-[85%] rounded-full bg-orange-500" />
-                </div>
-              </div>
-            </div>
-            <button className="mt-4 w-full rounded-lg bg-purple-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500">
-              Upgrade Plan
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex flex-1 flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center justify-between p-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">AI Agent Orchestration</h1>
-            <p className="text-sm text-gray-500">
-              Monitor and manage your AI agents in real-time
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500">
-              <Plus className="h-4 w-4" />
-              Create Agent
-            </button>
-            <button className="rounded-lg border border-gray-800 bg-[#0F1523] p-2 text-gray-400 transition-colors hover:text-white">
-              <Bell className="h-4 w-4" />
-            </button>
-            <button className="flex items-center gap-2 rounded-lg border border-gray-800 bg-[#0F1523] px-3 py-2 text-sm text-gray-300 transition-colors hover:text-white">
+        <div className="flex items-center gap-3">
+          <button onClick={() => alert("Create Agent")} className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-purple-700 active:scale-95">
+            <Plus className="h-4 w-4" />
+            Create Agent
+          </button>
+          <button onClick={() => alert("Notifications")} className="rounded-lg border border-gray-800 bg-[#0F1523] p-2 text-gray-400 transition-colors hover:text-white">
+            <Bell className="h-4 w-4" />
+          </button>
+          <div className="relative">
+            <button onClick={() => setEnvOpen(!envOpen)} className="flex items-center gap-2 rounded-lg border border-gray-800 bg-[#0F1523] px-3 py-2 text-sm text-gray-300 transition-colors hover:text-white">
               Production
               <ChevronDown className="h-4 w-4" />
             </button>
+            {envOpen && (
+              <div className="absolute right-0 top-full mt-2 w-40 rounded-lg border border-gray-800 bg-[#0F1523] p-1 shadow-lg">
+                {["Production", "Staging", "Development"].map((e) => (
+                  <button
+                    key={e}
+                    onClick={() => { alert(e); setEnvOpen(false); }}
+                    className="block w-full rounded px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800/50 hover:text-white"
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Scrollable Area */}
-        <div className="flex-1 overflow-y-auto p-6">
+      {/* Scrollable Area */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {/* Top Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             {metrics.map((m) => {
@@ -319,7 +228,7 @@ export default function Home() {
               return (
                 <div
                   key={m.title}
-                  className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50"
+                  className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10"
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${m.bg} ${m.color}`}>
@@ -344,7 +253,7 @@ export default function Home() {
           {/* Middle Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             {/* Agent Swarm Status */}
-            <div className="lg:col-span-2 rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50">
+            <div className="lg:col-span-2 rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-white">Agent Swarm Status</h2>
                 <a href="#" className="text-xs text-purple-400 hover:text-purple-300">
@@ -353,19 +262,17 @@ export default function Home() {
               </div>
               <div className="flex flex-col gap-3">
                 {agents.map((a) => {
-                  const Icon = a.icon;
                   const pct = Math.round((a.done / a.total) * 100);
                   return (
                     <div
                       key={a.name}
                       className="flex items-center gap-4 rounded-lg border border-gray-800/60 bg-[#0B0F19]/50 p-3"
                     >
-                      <div
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: `${a.color}20`, color: a.color }}
-                      >
-                        <Icon className="h-4 w-4" />
-                      </div>
+                      <AgentIcon
+                        icon={a.agentIcon.icon}
+                        bgColor={a.agentIcon.bgColor}
+                        borderColor={a.agentIcon.borderColor}
+                      />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
                           <div>
@@ -424,7 +331,7 @@ export default function Home() {
             {/* Column 3 stacked */}
             <div className="flex flex-col gap-6">
               {/* Live Activity Feed */}
-              <div className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50">
+              <div className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10">
                 <h2 className="mb-4 text-sm font-semibold text-white">Live Activity Feed</h2>
                 <ul className="flex flex-col gap-1">
                   {activityFeed.map((item, i) => {
@@ -451,7 +358,7 @@ export default function Home() {
               </div>
 
               {/* Task Queue */}
-              <div className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50">
+              <div className="rounded-xl border border-gray-800 bg-[#0F1523] p-4 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10">
                 <h2 className="mb-4 text-sm font-semibold text-white">Task Queue</h2>
                 <div className="mb-4 flex gap-2">
                   {[
@@ -505,7 +412,7 @@ export default function Home() {
           </div>
 
           {/* Workflow Pipeline */}
-          <div className="bg-[#0F1523] border border-gray-800 rounded-xl p-4 mb-6 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50">
+          <div className="bg-[#0F1523] border border-gray-800 rounded-xl p-4 mb-6 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10">
             <h2 className="text-sm font-bold text-white mb-4">Workflow Pipeline</h2>
             <div className="w-full h-[400px] overflow-hidden rounded-lg">
               <ReactFlowProvider>
@@ -528,7 +435,7 @@ export default function Home() {
           </div>
 
           {/* Agent Communication Log */}
-          <div className="bg-[#0F1523] border border-gray-800 rounded-xl p-4 flex flex-col h-[400px] transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-black/50">
+          <div className="bg-[#0F1523] border border-gray-800 rounded-xl p-4 flex flex-col h-[400px] transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-purple-500/10">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-sm font-bold text-white">Agent Communication Log</h2>
               <div className="flex gap-2">
@@ -550,7 +457,7 @@ export default function Home() {
               ].map((m, i) => {
                 const Icon = m.icon;
                 return (
-                  <div key={i} className="flex items-start gap-3 text-sm border-b border-gray-800/50 pb-3">
+                  <div key={i} className="flex items-start gap-3 text-sm border-b border-gray-800 pb-3">
                     <Icon className={`w-4 h-4 ${m.color} mt-1`} />
                     <div className="flex-1">
                       <div className="flex justify-between">
@@ -569,13 +476,12 @@ export default function Home() {
                 placeholder="Type your message..."
                 className="flex-1 bg-[#0B0F19] border border-gray-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-purple-500"
               />
-              <button className="rounded-lg bg-purple-600 p-3 text-white transition-colors hover:bg-purple-500">
+              <button className="rounded-lg bg-purple-600 p-3 text-white transition-all duration-200 hover:bg-purple-700 active:scale-95">
                 <Send className="h-4 w-4" />
               </button>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   );
 }
